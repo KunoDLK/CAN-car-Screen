@@ -1,0 +1,13 @@
+Dial types (for each red line should be configrable to high/low values)
+circular dial - standard
+circular dial - symetric
+lable-value
+bar vertical outline/no outline
+bar lines horisontal
+
+values:
+real time fuel usage ml/s
+liter remaining
+gear
+battery voltage
+accseleration
