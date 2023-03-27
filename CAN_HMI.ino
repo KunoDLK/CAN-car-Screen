@@ -14,6 +14,8 @@ int _colorWarning = 0xFFA0;
 int _colorBad = RA8875_RED;
 int _colorCold = 0x249f;
 
+bool _DemoMode = false;
+
 long int t1 = 0;
 long int t15 = 0;
 long int t2 = 0;
@@ -64,11 +66,19 @@ DataPoint Dials[6] =
 int numOfBars = 5;
 DataPoint Bars[5] =
 {
+<<<<<<< Updated upstream
   {0,  0, 0, 100, 1, 33  , 66,  2, 460, 40, {'T', 'H', 'R', 'L'}},
   {25, 0, 0, 100, 1, 33  , 66,  2, 520, 40, {'T', 'H', 'R', 'L'}},
   {50, 0, 0, 100, 1, 33  , 66,  2, 580, 40, {'T', 'H', 'R', 'L'}},
   {75, 0, 0, 100, 1, 33  , 66,  2, 640, 40, {'T', 'H', 'R', 'L'}},
   {0,  0, 0, 60,  1, 100 , 100, 2, 700, 40, {'F', 'P', 'S'}}
+=======
+  {0,  0, 0, 100, 1, 33  , 66,  UIType_BarGraph, 460, 40, {'T', 'H', 'R', 'L'}},
+  {0, 0, 0, 100, 1, 33  , 66,  UIType_BarGraph, 520, 40, {'T', 'H', 'R', 'L'}},
+  {0, 0, 0, 100, 1, 33  , 66,  UIType_BarGraph, 580, 40, {'T', 'H', 'R', 'L'}},
+  {0, 0, 0, 100, 1, 33  , 66,  UIType_BarGraph, 640, 40, {'T', 'H', 'R', 'L'}},
+  {0,  0, 0, 60,  1, 100 , 100, UIType_BarGraph, 700, 40, {'F', 'P', 'S'}}
+>>>>>>> Stashed changes
 };
 
 StaticText InfoText[3] =
@@ -82,31 +92,49 @@ void setup()
 {
   /* Initialize the display using 'RA8875_480x80', 'RA8875_480x128', 'RA8875_480x272' or 'RA8875_800x480' */
   tft.begin(RA8875_800x480);
+  tft.brightness(255);
   tft.displayOn(true);
   tft.GPIOX(true);
-  tft.brightness(255);
   Serial.begin(115200);
 
-  tft.setTextColor(_dialForeground);
-  tft.setFontScale(1);
-  tft.write("Booting...\n");
-  delay(250);
-  tft.write("Hello world!\n");
-  delay(250);
-  tft.write("Made By ");
-  tft.setTextColor(_colorNormal);
-  tft.write("Kuno De Leeuw-Kent \2\n");
-  tft.setTextColor(_dialForeground);
-  delay(250);
-  tft.write("initialising");
-  for (int i = 0; i < 16; i++)
+  inisiliseStaticElements();
+
+  for (int i = -45; i <= 165; i += 5)
   {
-    delay(100);
-    tft.write('.');
+    for (DataPoint dial : Dials)
+    {
+      int triWidth = 5;
+      int newAngle = i;
+      int oldAngle = i - 5;
+
+      DrawPointer(dial, polarToCartesian(oldAngle, 65), polarToCartesian(oldAngle + triWidth, 55), polarToCartesian(oldAngle - triWidth, 55), _background);
+      DrawPointer(dial, polarToCartesian(newAngle, 65), polarToCartesian(newAngle + triWidth, 55), polarToCartesian(newAngle - triWidth, 55), _dialForeground);
+    }
   }
 
+  inisiliseDynamicElements();
 
-  tft.clearScreen();
+  for (int i = 155; i >= -45; i -= 10)
+  {
+    for (DataPoint dial : Dials)
+    {
+      int triWidth = 5;
+      int newAngle = i;
+      int oldAngle = i + 10;
+      DrawPointer(dial, polarToCartesian(oldAngle, 65), polarToCartesian(oldAngle + triWidth, 55), polarToCartesian(oldAngle - triWidth, 55), _background);
+      DrawPointer(dial, polarToCartesian(newAngle, 65), polarToCartesian(newAngle + triWidth, 55), polarToCartesian(newAngle - triWidth, 55), _dialForeground);
+    }
+  }
+
+  for (DataPoint dial : Dials)
+  {
+    int triWidth = 5;
+    DrawPointer(dial, polarToCartesian(-45, 65), polarToCartesian(-45 + triWidth, 55), polarToCartesian(-45 - triWidth, 55), _background);
+  }
+}
+
+void inisiliseStaticElements()
+{
   tft.setTextColor(_dialForeground);
 
   for (StaticText text : InfoText)
@@ -127,20 +155,10 @@ void setup()
   {
     DrawBarGraph(bar);
   }
+}
 
-  for (int i = -45; i <= 165; i += 5)
-  {
-    for (DataPoint dial : Dials)
-    {
-      int triWidth = 5;
-      int newAngle = i;
-      int oldAngle = i - 5;
-
-      DrawPointer(dial, polarToCartesian(oldAngle, 65), polarToCartesian(oldAngle + triWidth, 55), polarToCartesian(oldAngle - triWidth, 55), _background);
-      DrawPointer(dial, polarToCartesian(newAngle, 65), polarToCartesian(newAngle + triWidth, 55), polarToCartesian(newAngle - triWidth, 55), _dialForeground);
-    }
-  }
-
+void inisiliseDynamicElements()
+{
   for (DataPoint dial : Dials)
   {
     if (dial.minValue < 0)
@@ -155,53 +173,20 @@ void setup()
     /*  red line draw */
     DrawRedLine(dial);
   }
-
-  for (int i = 165; i >= -45; i -= 10)
-  {
-    for (DataPoint dial : Dials)
-    {
-      int triWidth = 5;
-      int newAngle = i;
-      int oldAngle = i + 10;
-      DrawPointer(dial, polarToCartesian(oldAngle, 65), polarToCartesian(oldAngle + triWidth, 55), polarToCartesian(oldAngle - triWidth, 55), _background);
-      DrawPointer(dial, polarToCartesian(newAngle, 65), polarToCartesian(newAngle + triWidth, 55), polarToCartesian(newAngle - triWidth, 55), _dialForeground);
-    }
-  }
-
-  for (DataPoint dial : Dials)
-  {
-    int triWidth = 5;
-    DrawPointer(dial, polarToCartesian(-45, 65), polarToCartesian(-45 + triWidth, 55), polarToCartesian(-45 - triWidth, 55), _background);
-  }
 }
-
 
 void loop()
 {
   t1 = micros();
 
-  int value = analogRead(0);
-
-  for (int i = 0; i < numOfDials - 1; i++)
+  if (Serial.available() > 0)
   {
-    //Dials[i].value = (((float)(Dials[i].maxValue - Dials[i].minValue) / 1024) * value) + Dials[i].minValue;
-
-    Dials[i].value += (float)(Dials[i].maxValue - Dials[i].minValue) / 500;
-    if (Dials[i].value >= Dials[i].maxValue)
-    {
-      Dials[i].value = Dials[i].minValue;
-    }
+    DoSerialTerminalConfigLoop();
   }
-  for (int i = 0; i < numOfBars - 1; i++)
+  if (_DemoMode)
   {
-    Bars[i].value += 1;
-
-    if (Bars[i].value >= Bars[i].maxValue)
-    {
-      Bars[i].value = Bars[i].minValue;
-    }
+    DoDummyValueChanger();
   }
-
   updateDials();
   updateBars();
 
@@ -219,6 +204,81 @@ void loop()
   }
 
   DrawStats();
+}
+
+void DoSerialTerminalConfigLoop()
+{
+  byte inputBytes[255];
+  tft.clearScreen();
+  tft.setFontScale(0);
+  tft.setCursor(0, 0);
+  tft.setTextColor(_dialForeground);
+  String welcomeText = "Connected to serial:\n/Help for more information\n/return to return to normal mode\n";
+  tft.print(welcomeText);
+  Serial.print(welcomeText);
+
+  while (true)
+  {
+    // Read bytes from serial into inputBytes
+    int bytesRead = Serial.readBytes(inputBytes, 255);
+
+    // Convert byte array to string
+    String inputString = "";
+    for (int i = 0; i < bytesRead; i++) {
+      inputString += (char)inputBytes[i];
+    }
+
+    // Test if inputString equals "/return\n"
+    if (strcmp(inputString.c_str(), "/return\n") == 0) {
+      break;
+    }
+
+    // Test if inputString equals "/demo"
+    if (strcmp(inputString.c_str(), "/demo\n") == 0) {
+      _DemoMode = !_DemoMode;
+      if (_DemoMode)
+      {
+        Serial.print("Enabled");
+      }
+      else
+      {
+        Serial.print("Disabled");
+      }
+
+      // Write string to TFT display
+      tft.write(inputString.c_str());  // Convert String to const char*
+    }
+
+
+  }
+  tft.clearScreen();
+  inisiliseStaticElements();
+  inisiliseDynamicElements();
+}
+
+void DoDummyValueChanger()
+{
+  int value = analogRead(0);
+
+  for (int i = 0; i < numOfDials - 1; i++)
+  {
+    //[i].value = (((float)(Dials[i].maxValue - Dials[i].minValue) / 1024) * value) + Dials[i].minValue;
+
+    Dials[i].value += (float)(Dials[i].maxValue - Dials[i].minValue) / 500;
+    if (Dials[i].value >= Dials[i].maxValue)
+    {
+      Dials[i].value = Dials[i].minValue;
+    }
+  }
+  for (int i = 0; i < numOfBars - 1; i++)
+  {
+    Bars[i].value += 1;
+
+    if (Bars[i].value >= Bars[i].maxValue)
+    {
+      Bars[i].value = Bars[i].minValue;
+    }
+  }
 }
 
 void DrawBarGraph(DataPoint bar)
@@ -250,7 +310,7 @@ void DrawStats()
   {
     percentLoad = 100;
   }
- 
+
   if (FPS < 25)
   {
     tft.setTextColor(_colorBad, _background);
@@ -306,38 +366,31 @@ void updateBars()
 
   for (int i = 0; i < numOfBars; i++)
   {
-    int noduals = 60;
+    int noduals = 48;
     int margin = 1;
     int fullHeight = 240;
     int fullWidth = 30;
 
-    int height = (Bars[i].value * (fullHeight - (2 * margin))) / Bars[i].maxValue;
-    int oldHeight = (Bars[i].lastValue * (fullHeight - (2 * margin))) / Bars[i].maxValue;
-    int warningHeight = (Bars[i].warningValue * (fullHeight - (2 * margin))) / Bars[i].maxValue;
-    int redLineHeight = (Bars[i].redLine * (fullHeight - (2 * margin))) / Bars[i].maxValue;
-    int zeroPoint = (Bars[i].minValue * (fullHeight - (2 * margin))) / Bars[i].maxValue;
+    int height = (Bars[i].value * (fullHeight - 2 - (2 * margin))) / Bars[i].maxValue;
+    int oldHeight = (Bars[i].lastValue * (fullHeight - 2 - (2 * margin))) / Bars[i].maxValue;
 
     int nodualHeight = fullHeight / noduals;
     int oldNodual = oldHeight / nodualHeight;
     int currentNodual = height / nodualHeight;
+    int color;
 
-    if (currentNodual > oldNodual)
+    if (currentNodual != oldNodual)
     {
-      for (int j = oldNodual; j < currentNodual; j++)
+      if (currentNodual > oldNodual)
       {
-        float value = ((float)j / noduals) * 100;
-        int color = choseDialColor(value, Bars[i]);
-        tft.fillRect(Bars[i].xPos + margin, (Bars[i].yPos + (fullHeight - nodualHeight) - (j * nodualHeight)) + margin, (fullWidth - (2 * margin)), (nodualHeight - margin), color);
+        color = choseDialColor(Bars[i].value, Bars[i]);
       }
-    }
-    else if (currentNodual < oldNodual)
-    {
-      for (int j = oldNodual; j > currentNodual ; j--)
+      else if (currentNodual < oldNodual)
       {
-        tft.fillRect(Bars[i].xPos + margin, (Bars[i].yPos + (fullHeight - nodualHeight) - (j * nodualHeight)) + margin, (fullWidth - (2 * margin)), (nodualHeight - margin), _background);
+        color = _background;
       }
+      tft.fillRect(Bars[i].xPos + margin + 1, (Bars[i].yPos + fullHeight - (currentNodual * nodualHeight) + margin + 1), (fullWidth - 2 - (margin * 2)), (nodualHeight - margin), color);
     }
-
     Bars[i].lastValue = Bars[i].value;
   }
 }
