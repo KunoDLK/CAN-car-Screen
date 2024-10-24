@@ -387,7 +387,9 @@
   },
   "libraries": {
     "pinned_footprint_libs": [],
-    "pinned_symbol_libs": []
+    "pinned_symbol_libs": [
+      "Project Symbol"
+    ]
   },
   "meta": {
     "filename": "KDLK24-CDD.kicad_pro",
