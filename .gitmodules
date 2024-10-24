@@ -1,0 +1,3 @@
+[submodule "PCB/KDLK24-CDD/Adafruit-RA8875-Breakout-Board-PCB"]
+	path = PCB/KDLK24-CDD/Adafruit-RA8875-Breakout-Board-PCB
+	url = https://github.com/adafruit/Adafruit-RA8875-Breakout-Board-PCB.git
