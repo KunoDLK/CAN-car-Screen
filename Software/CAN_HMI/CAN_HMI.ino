@@ -14,7 +14,7 @@ int _colorWarning = 0xFFA0;
 int _colorBad = RA8875_RED;
 int _colorCold = 0x249f;
 
-bool _DemoMode = false;
+bool _DemoMode = true;
 
 long int t1 = 0;
 long int t15 = 0;
@@ -63,14 +63,10 @@ DataPoint Dials[6] =
   {0,  0, 0, 60,  1, 60 , 60, 1, 307, 408, {'F', 'P', 'S'}}
 };
 
-int numOfBars = 5;
-DataPoint Bars[5] =
+int numOfBars = 1;
+DataPoint Bars[1] =
 {
-  {0,  0, 0, 100, 1, 33  , 66,  2, 460, 40, {'T', 'H', 'R', 'L'}},
-  {0, 0, 0, 100, 1, 33  , 66,  2, 520, 40, {'T', 'H', 'R', 'L'}},
-  {0, 0, 0, 100, 1, 33  , 66,  2, 580, 40, {'T', 'H', 'R', 'L'}},
-  {0, 0, 0, 100, 1, 33  , 66,  2, 640, 40, {'T', 'H', 'R', 'L'}},
-  {0,  0, 0, 60,  1, 100 , 100, 2, 700, 40, {'F', 'P', 'S'}}
+  {50,  0, 0, 100, 1, 33  , 66,  2, 460, 40, {'T', 'E', 'S', 'T'}},
 };
 
 StaticText InfoText[3] =
@@ -250,19 +246,16 @@ void DoSerialTerminalConfigLoop()
 
 void DoDummyValueChanger()
 {
-  int value = analogRead(0);
-
   for (int i = 0; i < numOfDials - 1; i++)
   {
-    //[i].value = (((float)(Dials[i].maxValue - Dials[i].minValue) / 1024) * value) + Dials[i].minValue;
 
     Dials[i].value += (float)(Dials[i].maxValue - Dials[i].minValue) / 500;
     if (Dials[i].value >= Dials[i].maxValue)
     {
-      Dials[i].value = Dials[i].minValue;
+       Dials[i].value = Dials[i].minValue;
     }
   }
-  for (int i = 0; i < numOfBars - 1; i++)
+  for (int i = 0; i < numOfBars; i++)
   {
     Bars[i].value += 1;
 
@@ -370,21 +363,55 @@ void updateBars()
     int oldNodual = oldHeight / nodualHeight;
     int currentNodual = height / nodualHeight;
     int color;
-
+    int nodualToDraw = oldNodual;
+ 
     if (currentNodual != oldNodual)
     {
       if (currentNodual > oldNodual)
       {
         color = choseDialColor(Bars[i].value, Bars[i]);
+        nodualToDraw += 1;
       }
       else if (currentNodual < oldNodual)
       {
         color = _background;
+        nodualToDraw -= 1;
       }
-      tft.fillRect(Bars[i].xPos + margin + 1, (Bars[i].yPos + fullHeight - (currentNodual * nodualHeight) + margin + 1), (fullWidth - 2 - (margin * 2)), (nodualHeight - margin), color);
+      tft.fillRect(Bars[i].xPos + margin + 1, (Bars[i].yPos + fullHeight - (nodualToDraw * nodualHeight) + margin + 1), (fullWidth - 2 - (margin * 2)), (nodualHeight - margin), color);
     }
     Bars[i].lastValue = Bars[i].value;
+
+  int xpos = Bars[i].xPos + 31;
+  int ypos = Bars[i].yPos + 50;
+  tft.fillRect(xpos, ypos, 50, 160, _background);
+  tft.setTextColor(_dialForeground);
+  tft.setFontScale(0);
+  tft.setCursor(xpos, ypos);
+  DrawNumberValue(Bars[i].value);
+  ypos += 20;
+  tft.setCursor(xpos, ypos);
+  DrawNumberValue(height);
+  ypos += 20;
+  tft.setCursor(xpos, ypos);
+  DrawNumberValue(oldHeight);
+  ypos += 20;
+  tft.setCursor(xpos, ypos);
+  DrawNumberValue(height);
+  ypos += 20;
+  tft.setCursor(xpos, ypos);
+  DrawNumberValue(nodualHeight);
+  ypos += 20;
+  tft.setCursor(xpos, ypos);
+  DrawNumberValue(oldNodual);
+  ypos += 20;
+  tft.setCursor(xpos, ypos);
+  DrawNumberValue(currentNodual);
+  ypos += 20;
+  tft.setCursor(xpos, ypos);
+  DrawNumberValue(nodualToDraw);
+  
   }
+
 }
 
 void updateText(DataPoint dial)
