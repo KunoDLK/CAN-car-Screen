@@ -6,6 +6,9 @@
 #define RA8875_RESET 9
 #define ACAN2515_CS 8
 
+#define TargetFPS 60
+#define FRAMETIME 1000000 / TargetFPS
+
 /* dial colors */
 int _dialForeground = RA8875_WHITE;
 int _background = RA8875_BLACK;
@@ -53,31 +56,28 @@ struct Coordinates {
 RA8875 tft = RA8875(RA8875_CS, RA8875_RESET);
 
 int numOfDials = 6;
-DataPoint Dials[6] =
-{
-  {0, 1, -18, 124, 1, 95, 105, 1, 130, 85, {'O', 'I', 'L', ' ', '(', 186, 'C', ')'}},
-  {0, 1, -18, 124, 1, 95, 105, 1, 307, 85, {'C', 'O', 'L', 'N', 'T', ' ', '(', 186, 'C', ')'}},
-  {0, 1, 0, 8000, 0, 5000, 6500, 1, 130, 245, {'E', 'N', 'G', 'I', 'N', 'E'}},
-  {0, 1, 0, 8000, 0, 5000, 6500, 1, 307, 245, {'T', 'R', 'A', 'N', 'S'}},
-  {0, 1, 0, 99.9, 2, 33, 66, 1, 130, 408, {'S', 'P', 'E', 'E', 'D'}},
-  {0,  0, 0, 60,  1, 60 , 60, 1, 307, 408, {'F', 'P', 'S'}}
+DataPoint Dials[6] = {
+  { 0, 1, -18, 124, 1, 95, 105, 1, 130, 85, { 'O', 'I', 'L', ' ', '(', 186, 'C', ')' } },
+  { 0, 1, -18, 124, 1, 95, 105, 1, 307, 85, { 'C', 'O', 'L', 'N', 'T', ' ', '(', 186, 'C', ')' } },
+  { 0, 1, 0, 8000, 0, 5000, 6500, 1, 130, 245, { 'E', 'N', 'G', 'I', 'N', 'E' } },
+  { 0, 1, 0, 8000, 0, 5000, 6500, 1, 307, 245, { 'T', 'R', 'A', 'N', 'S' } },
+  { 0, 1, 0, 99.9, 2, 33, 66, 1, 130, 408, { 'S', 'P', 'E', 'E', 'D' } },
+  { 0, 0, 0, 60, 1, 60, 60, 1, 307, 408, { 'F', 'P', 'S' } }
 };
 
-int numOfBars = 1;
-DataPoint Bars[1] =
-{
-  {50,  0, 0, 100, 1, 33  , 66,  2, 460, 40, {'T', 'E', 'S', 'T'}},
+int numOfBars = 2;
+DataPoint Bars[2] = {
+  { 0, 0, 0, 100, 1, 33, 66, 2, 460, 40, { 'T', 'E', 'S', 'T' } },
+  { 0, 0, 0, 60, 1, 33, 66, 2, 520, 40, { 'F', 'P', 'S' } },
 };
 
-StaticText InfoText[3] =
-{
-  {0, 0, 1, {'T', 'E', 'M', 'P', 's'}},
-  {0, 170, 1, {'R', 'P', 'M', 's'}},
-  {0, 336, 1, {'I', 'N', 'F', 'O'}}
+StaticText InfoText[3] = {
+  { 0, 0, 1, { 'T', 'E', 'M', 'P', 's' } },
+  { 0, 170, 1, { 'R', 'P', 'M', 's' } },
+  { 0, 336, 1, { 'I', 'N', 'F', 'O' } }
 };
 
-void setup()
-{
+void setup() {
   /* Initialize the display using 'RA8875_480x80', 'RA8875_480x128', 'RA8875_480x272' or 'RA8875_800x480' */
   tft.begin(RA8875_800x480);
   tft.brightness(255);
@@ -87,10 +87,8 @@ void setup()
 
   inisiliseStaticElements();
 
-  for (int i = -45; i <= 165; i += 5)
-  {
-    for (DataPoint dial : Dials)
-    {
+  for (int i = -45; i <= 165; i += 5) {
+    for (DataPoint dial : Dials) {
       int triWidth = 5;
       int newAngle = i;
       int oldAngle = i - 5;
@@ -102,10 +100,8 @@ void setup()
 
   inisiliseDynamicElements();
 
-  for (int i = 155; i >= -45; i -= 10)
-  {
-    for (DataPoint dial : Dials)
-    {
+  for (int i = 155; i >= -45; i -= 10) {
+    for (DataPoint dial : Dials) {
       int triWidth = 5;
       int newAngle = i;
       int oldAngle = i + 10;
@@ -114,19 +110,16 @@ void setup()
     }
   }
 
-  for (DataPoint dial : Dials)
-  {
+  for (DataPoint dial : Dials) {
     int triWidth = 5;
     DrawPointer(dial, polarToCartesian(-45, 65), polarToCartesian(-45 + triWidth, 55), polarToCartesian(-45 - triWidth, 55), _background);
   }
 }
 
-void inisiliseStaticElements()
-{
+void inisiliseStaticElements() {
   tft.setTextColor(_dialForeground);
 
-  for (StaticText text : InfoText)
-  {
+  for (StaticText text : InfoText) {
     DrawStaticText(text);
   }
 
@@ -134,23 +127,18 @@ void inisiliseStaticElements()
   tft.drawLine(0, 320, 420, 320, _colorNormal);
   tft.drawLine(420, 0, 420, 480, _colorNormal);
 
-  for (DataPoint dial : Dials)
-  {
+  for (DataPoint dial : Dials) {
     DrawCircularDial(dial);
   }
 
-  for (DataPoint bar : Bars)
-  {
+  for (DataPoint bar : Bars) {
     DrawBarGraph(bar);
   }
 }
 
-void inisiliseDynamicElements()
-{
-  for (DataPoint dial : Dials)
-  {
-    if (dial.minValue < 0)
-    {
+void inisiliseDynamicElements() {
+  for (DataPoint dial : Dials) {
+    if (dial.minValue < 0) {
       float zeroAngle = calculatePointerAngle(dial.minValue, dial.maxValue, 0);
       Coordinates zero = polarToCartesian(zeroAngle + 6, 85);
       tft.setCursor((dial.xPos - zero.xPos), (dial.yPos - zero.yPos));
@@ -163,16 +151,13 @@ void inisiliseDynamicElements()
   }
 }
 
-void loop()
-{
+void loop() {
   t1 = micros();
 
-  if (Serial.available() > 0)
-  {
+  if (Serial.available() > 0) {
     DoSerialTerminalConfigLoop();
   }
-  if (_DemoMode)
-  {
+  if (_DemoMode) {
     DoDummyValueChanger();
   }
   updateDials();
@@ -180,22 +165,19 @@ void loop()
 
   timeArray[timeArrayPointer] = (micros() - t1);
 
-  do
-  {
+  do {
     t2 = micros();
-  } while (t2 - t1 < 16667);
+  } while (t2 - t1 < FRAMETIME);
 
   timeArrayPointer += 1;
-  if (timeArrayPointer > 9)
-  {
+  if (timeArrayPointer > 9) {
     timeArrayPointer = 0;
   }
 
   DrawStats();
 }
 
-void DoSerialTerminalConfigLoop()
-{
+void DoSerialTerminalConfigLoop() {
   byte inputBytes[255];
   tft.clearScreen();
   tft.setFontScale(0);
@@ -205,8 +187,7 @@ void DoSerialTerminalConfigLoop()
   tft.print(welcomeText);
   Serial.print(welcomeText);
 
-  while (true)
-  {
+  while (true) {
     // Read bytes from serial into inputBytes
     int bytesRead = Serial.readBytes(inputBytes, 255);
 
@@ -224,88 +205,74 @@ void DoSerialTerminalConfigLoop()
     // Test if inputString equals "/demo"
     if (strcmp(inputString.c_str(), "/demo\n") == 0) {
       _DemoMode = !_DemoMode;
-      if (_DemoMode)
-      {
+      if (_DemoMode) {
         Serial.print("Enabled");
-      }
-      else
-      {
+      } else {
         Serial.print("Disabled");
       }
 
       // Write string to TFT display
       tft.write(inputString.c_str());  // Convert String to const char*
     }
-
-
   }
   tft.clearScreen();
   inisiliseStaticElements();
   inisiliseDynamicElements();
 }
 
-void DoDummyValueChanger()
-{
-  for (int i = 0; i < numOfDials - 1; i++)
-  {
+void DoDummyValueChanger() {
+  for (int i = 0; i < numOfDials - 1; i++) {
 
     Dials[i].value += (float)(Dials[i].maxValue - Dials[i].minValue) / 500;
-    if (Dials[i].value >= Dials[i].maxValue)
-    {
-       Dials[i].value = Dials[i].minValue;
+    if (Dials[i].value >= Dials[i].maxValue) {
+      Dials[i].value = Dials[i].minValue;
     }
   }
-  for (int i = 0; i < numOfBars; i++)
-  {
-    Bars[i].value += 1;
+  for (int i = 0; i < numOfBars; i++) {
+    
 
-    if (Bars[i].value >= Bars[i].maxValue)
-    {
+    if (Bars[i].lastValue == Bars[i].maxValue) {
       Bars[i].value = Bars[i].minValue;
+    }
+    if (Bars[i].lastValue == Bars[i].minValue) {
+      Bars[i].value = Bars[i].maxValue;
     }
   }
 }
 
-void DrawBarGraph(DataPoint bar)
-{
+void DrawBarGraph(DataPoint bar) {
   tft.drawRect(bar.xPos, bar.yPos, 30, 240, _dialForeground);
 
-  tft.setTextColor(_dialForeground);
+  tft.setTextColor(_dialForeground, _background);
   tft.setFontScale(0);
+  tft.setCursor(bar.xPos + 31, bar.yPos - 22);
+
   tft.setCursor(bar.xPos + 31, bar.yPos - 2);
   DrawNumberValue(bar.maxValue);
   tft.setCursor(bar.xPos + 31, bar.yPos + 225);
   DrawNumberValue(bar.minValue);
 }
 
-void DrawStats()
-{
+void DrawStats() {
   float frameTime = (t2 - t1);
   float FPS = 1000 / (frameTime / 1000);
-  Bars[4].value = FPS;
+  Bars[1].value = FPS;
   Dials[5].value = FPS;
   float value = 0;
-  for (int i = 0 ; i < 10 ; i++)
-  {
+  for (int i = 0; i < 10; i++) {
     value += timeArray[i];
   }
   value = value / 10;
   int percentLoad = 100 * (float)(value / frameTime);
-  if (percentLoad > 100)
-  {
+  if (percentLoad > 100) {
     percentLoad = 100;
   }
 
-  if (FPS < 25)
-  {
+  if (FPS < 25) {
     tft.setTextColor(_colorBad, _background);
-  }
-  else if (FPS < 59)
-  {
+  } else if (FPS < 59) {
     tft.setTextColor(_colorWarning, _background);
-  }
-  else
-  {
+  } else {
     tft.setTextColor(_colorNormal, _background);
   }
 
@@ -324,18 +291,12 @@ void DrawStats()
   tft.write("   ");
 }
 
-void updateDials()
-{
-  for (int i = 0; i < numOfDials; i++)
-  {
-    if (Dials[i].value != Dials[i].lastValue)
-    {
-      if (Dials[i].value > Dials[i].maxValue)
-      {
+void updateDials() {
+  for (int i = 0; i < numOfDials; i++) {
+    if (Dials[i].value != Dials[i].lastValue) {
+      if (Dials[i].value > Dials[i].maxValue) {
         Dials[i].value = Dials[i].maxValue;
-      }
-      else if (Dials[i].value < Dials[i].minValue)
-      {
+      } else if (Dials[i].value < Dials[i].minValue) {
         Dials[i].value = Dials[i].minValue;
       }
       updatePointer(Dials[i]);
@@ -345,77 +306,59 @@ void updateDials()
   }
 }
 
-void updateBars()
-{
+void updateBars() {
   // bar is 240 high, 30 wide
 
-  for (int i = 0; i < numOfBars; i++)
-  {
-    int noduals = 48;
+  for (int i = 0; i < numOfBars; i++) {
+    int noduals = 24;
     int margin = 1;
-    int fullHeight = 240;
+    int fullHeight = 240 - (2 * margin) - (2);
     int fullWidth = 30;
 
-    int height = (Bars[i].value * (fullHeight - 2 - (2 * margin))) / Bars[i].maxValue;
-    int oldHeight = (Bars[i].lastValue * (fullHeight - 2 - (2 * margin))) / Bars[i].maxValue;
-
     int nodualHeight = fullHeight / noduals;
-    int oldNodual = oldHeight / nodualHeight;
-    int currentNodual = height / nodualHeight;
+    int numCurrentNoduals = ((Bars[i].value * noduals) / Bars[i].maxValue)  + 0.5;
+    int numOldNoduals = ((Bars[i].lastValue * noduals) / Bars[i].maxValue) + 0.5;
     int color;
-    int nodualToDraw = oldNodual;
- 
-    if (currentNodual != oldNodual)
-    {
-      if (currentNodual > oldNodual)
-      {
-        color = choseDialColor(Bars[i].value, Bars[i]);
-        nodualToDraw += 1;
-      }
-      else if (currentNodual < oldNodual)
-      {
+    int nodualToDraw = numOldNoduals;
+
+    // Update logic
+    if (numCurrentNoduals != numOldNoduals) {
+      if (numCurrentNoduals > numOldNoduals) {
+        // Draw additional rectangle
+        nodualToDraw++;
+        color = choseDialColor(Bars[i].lastValue, Bars[i]);
+        tft.fillRect(Bars[i].xPos + margin + 1, (Bars[i].yPos + fullHeight - (nodualToDraw * nodualHeight) + margin + 1), (fullWidth - 2 - (margin * 2)), (nodualHeight - margin), color);
+      } else {
+        // Remove rectangle
         color = _background;
-        nodualToDraw -= 1;
+        tft.fillRect(Bars[i].xPos + margin + 1, (Bars[i].yPos + fullHeight - (nodualToDraw * nodualHeight) + margin + 1), (fullWidth - 2 - (margin * 2)), (nodualHeight - margin), color);
+        nodualToDraw--;
       }
-      tft.fillRect(Bars[i].xPos + margin + 1, (Bars[i].yPos + fullHeight - (nodualToDraw * nodualHeight) + margin + 1), (fullWidth - 2 - (margin * 2)), (nodualHeight - margin), color);
+      Bars[i].lastValue = (nodualToDraw / (double)noduals) * Bars[i].maxValue;  // Update last value to reflect the number of rectangles
     }
-    Bars[i].lastValue = Bars[i].value;
 
-  int xpos = Bars[i].xPos + 31;
-  int ypos = Bars[i].yPos + 50;
-  tft.fillRect(xpos, ypos, 50, 160, _background);
-  tft.setTextColor(_dialForeground);
-  tft.setFontScale(0);
-  tft.setCursor(xpos, ypos);
-  DrawNumberValue(Bars[i].value);
-  ypos += 20;
-  tft.setCursor(xpos, ypos);
-  DrawNumberValue(height);
-  ypos += 20;
-  tft.setCursor(xpos, ypos);
-  DrawNumberValue(oldHeight);
-  ypos += 20;
-  tft.setCursor(xpos, ypos);
-  DrawNumberValue(height);
-  ypos += 20;
-  tft.setCursor(xpos, ypos);
-  DrawNumberValue(nodualHeight);
-  ypos += 20;
-  tft.setCursor(xpos, ypos);
-  DrawNumberValue(oldNodual);
-  ypos += 20;
-  tft.setCursor(xpos, ypos);
-  DrawNumberValue(currentNodual);
-  ypos += 20;
-  tft.setCursor(xpos, ypos);
-  DrawNumberValue(nodualToDraw);
-  
+    int xpos = Bars[i].xPos + 31;
+    int ypos = Bars[i].yPos + 50;
+    tft.setTextColor(_dialForeground, _background);
+    tft.setFontScale(0);
+    tft.setCursor(xpos, ypos);
+    DrawNumberValue(Bars[i].value);
+    ypos += 20;
+    tft.setCursor(xpos, ypos);
+    DrawNumberValue(numOldNoduals);
+    ypos += 20;
+    tft.setCursor(xpos, ypos);
+    DrawNumberValue(numOldNoduals);
+    ypos += 20;
+    tft.setCursor(xpos, ypos);
+    DrawNumberValue(nodualToDraw);
+    ypos += 20;
+    tft.setCursor(xpos, ypos);
+    DrawNumberValue(Bars[i].lastValue);
   }
-
 }
 
-void updateText(DataPoint dial)
-{
+void updateText(DataPoint dial) {
   char cstr[16];
 
   tft.setCursor((dial.xPos - 28), (dial.yPos + 5));
@@ -424,36 +367,25 @@ void updateText(DataPoint dial)
   tft.write(dtostrf(dial.value, 5, dial.decimalPoints, cstr));
 }
 
-int choseDialColor(double value, DataPoint dial)
-{
-  if (value > dial.redLine)
-  {
+int choseDialColor(double value, DataPoint dial) {
+  if (value > dial.redLine) {
     return _colorBad;
-  }
-  else if (value > dial.warningValue)
-  {
+  } else if (value > dial.warningValue) {
     return _colorWarning;
-  }
-  else if (value < 0)
-  {
+  } else if (value < 0) {
     return _colorCold;
-  }
-  else
-  {
+  } else {
     return _colorNormal;
   }
 }
 
-void updatePointer(DataPoint dial)
-{
+void updatePointer(DataPoint dial) {
   int oldAngle = calculatePointerAngle(dial.minValue, dial.maxValue, dial.lastValue);
   int newAngle = calculatePointerAngle(dial.minValue, dial.maxValue, dial.value);
-  if (newAngle != oldAngle)
-  {
+  if (newAngle != oldAngle) {
     int triWidth = 6;
     int color = choseDialColor(dial.value, dial);
-    if (color == _colorNormal)
-    {
+    if (color == _colorNormal) {
       color = _dialForeground;
     }
     DrawPointer(dial, polarToCartesian(oldAngle, 65), polarToCartesian(oldAngle + triWidth, 55), polarToCartesian(oldAngle - triWidth, 55), _background);
@@ -461,18 +393,15 @@ void updatePointer(DataPoint dial)
   }
 }
 
-float calculatePointerAngle(int lowValue, int highValue, float value)
-{
+float calculatePointerAngle(int lowValue, int highValue, float value) {
   return (((float)(value - lowValue) / (float)(highValue - lowValue)) * 210.0) + -45;
 }
 
-float calculateBarPercent(int lowValue, int highValue, float value)
-{
+float calculateBarPercent(int lowValue, int highValue, float value) {
   return (((float)(value - lowValue) / (float)(highValue - lowValue)) * 100.0);
 }
 
-void DrawPointer(DataPoint dial, Coordinates arcPosition, Coordinates triPositionLeft, Coordinates triPositionRight, int color)
-{
+void DrawPointer(DataPoint dial, Coordinates arcPosition, Coordinates triPositionLeft, Coordinates triPositionRight, int color) {
   int arcPositionX = dial.xPos - arcPosition.xPos;
   int arcPositionY = dial.yPos - arcPosition.yPos;
 
@@ -485,10 +414,8 @@ void DrawPointer(DataPoint dial, Coordinates arcPosition, Coordinates triPositio
   tft.fillTriangle(arcPositionX, arcPositionY, triPositionLX, triPositionLY, triPositionRX, triPositionRY, color);
 }
 
-void DrawCircularDial(DataPoint dial)
-{
-  if (dial.uiType == 1)
-  {
+void DrawCircularDial(DataPoint dial) {
+  if (dial.uiType == 1) {
     int radius = 70;
 
     /* in degrees clockwise from horizontal */
@@ -530,40 +457,34 @@ void DrawCircularDial(DataPoint dial)
   }
 }
 
-void DrawStaticText(StaticText text)
-{
+void DrawStaticText(StaticText text) {
   tft.setCursor(text.xPos, text.yPos);
   tft.setFontScale(text.textSize);
   tft.write(text.text);
 }
 
-void DrawNumberValue(double number)
-{
+void DrawNumberValue(double number) {
   char cstr[8];
   tft.write(dtostrf(number, 0, 0, cstr));
 }
 
-void DrawRedLine(DataPoint dial)
-{
+void DrawRedLine(DataPoint dial) {
   int warningLineAngle = calculatePointerAngle(dial.minValue, dial.maxValue, dial.warningValue);
   int redLineAngle = calculatePointerAngle(dial.minValue, dial.maxValue, dial.redLine);
 
   tft.drawArc(dial.xPos, dial.yPos, 71, 6, redLineAngle - 90, 75, _colorBad);
   tft.drawArc(dial.xPos, dial.yPos, 71, 6, warningLineAngle - 90, redLineAngle - 90, _colorWarning);
-
 }
 
-void DrawColdLine(DataPoint dial)
-{
+void DrawColdLine(DataPoint dial) {
   int coldLineAngle = calculatePointerAngle(dial.minValue, dial.maxValue, 0);
 
   tft.drawArc(dial.xPos, dial.yPos, 71, 6, -135, (coldLineAngle - 90), _colorCold);
 }
 
-Coordinates polarToCartesian(float angle, int radius)
-{
+Coordinates polarToCartesian(float angle, int radius) {
   float angleRAD = angle * (3.141 / 180);
   int x = radius * cos(angleRAD);
   int y = radius * sin(angleRAD);
-  return Coordinates {x, y};
+  return Coordinates{ x, y };
 }
