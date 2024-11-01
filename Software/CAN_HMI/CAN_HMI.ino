@@ -67,7 +67,7 @@ DataPoint Dials[6] = {
 
 int numOfBars = 2;
 DataPoint Bars[2] = {
-  { 0, 0, 0, 100, 1, 33, 66, 2, 460, 40, { 'T', 'E', 'S', 'T' } },
+  { 100, 0, 0, 100, 1, 33, 66, 2, 460, 40, { 'T', 'E', 'S', 'T' } },
   { 0, 0, 0, 60, 1, 33, 66, 2, 520, 40, { 'F', 'P', 'S' } },
 };
 
@@ -241,7 +241,7 @@ void DoDummyValueChanger() {
 }
 
 void DrawBarGraph(DataPoint bar) {
-  tft.drawRect(bar.xPos, bar.yPos, 30, 240, _dialForeground);
+  tft.drawRect(bar.xPos, bar.yPos, 30, 243, _dialForeground);
 
   tft.setTextColor(_dialForeground, _background);
   tft.setFontScale(0);
@@ -312,7 +312,7 @@ void updateBars() {
   for (int i = 0; i < numOfBars; i++) {
     int noduals = 24;
     int margin = 1;
-    int fullHeight = 240 - (2 * margin) - (2);
+    int fullHeight = 244 - (2 * margin) - (2);
     int fullWidth = 30;
 
     int nodualHeight = fullHeight / noduals;
