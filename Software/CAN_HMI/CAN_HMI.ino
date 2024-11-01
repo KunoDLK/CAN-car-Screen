@@ -309,7 +309,7 @@ void updateBars() {
   // bar is 240 high, 30 wide
 
   for (int i = 0; i < numOfBars; i++) {
-    int noduals = 24;
+    int noduals = 30;
     int margin = 1;
     int fullHeight = 244 - (2 * margin) - (2);
     int fullWidth = 30;
