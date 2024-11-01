@@ -254,7 +254,7 @@ void DrawBarGraph(DataPoint bar) {
 
 void DrawStats() {
   float frameTime = (t2 - t1);
-  float FPS = 1000 / (frameTime / 1000);
+  float FPS = 1000.0 / (frameTime / 1000.0);
   Bars[1].value = FPS;
   float value = 0;
   for (int i = 0; i < 10; i++) {
