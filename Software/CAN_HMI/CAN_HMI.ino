@@ -62,13 +62,14 @@ DataPoint Dials[6] = {
   { 0, 1, 0, 8000, 0, 5000, 6500, 1, 130, 245, { 'E', 'N', 'G', 'I', 'N', 'E' } },
   { 0, 1, 0, 8000, 0, 5000, 6500, 1, 307, 245, { 'T', 'R', 'A', 'N', 'S' } },
   { 0, 1, 0, 99.9, 2, 33, 66, 1, 130, 408, { 'S', 'P', 'E', 'E', 'D' } },
-  { 0, 0, 0, 60, 1, 60, 60, 1, 307, 408, { 'F', 'P', 'S' } }
+  { 0, 0, -14.6, 50, 1, 35, 45, 1, 307, 408, { 'B', 'O', 'O', 'S', 'T' } }
 };
 
-int numOfBars = 2;
-DataPoint Bars[2] = {
+int numOfBars = 3;
+DataPoint Bars[3] = {
   { 100, 0, 0, 100, 1, 33, 66, 2, 460, 40, { 'T', 'E', 'S', 'T' } },
   { 0, 0, 0, 60, 1, 33, 66, 2, 520, 40, { 'F', 'P', 'S' } },
+  { 0, 0, 0, 100, 1, 80, 95, 2, 580, 40, { '%', 'L', 'D' } },
 };
 
 StaticText InfoText[3] = {
@@ -221,7 +222,7 @@ void DoSerialTerminalConfigLoop() {
 }
 
 void DoDummyValueChanger() {
-  for (int i = 0; i < numOfDials - 1; i++) {
+  for (int i = 0; i < numOfDials; i++) {
 
     Dials[i].value += (float)(Dials[i].maxValue - Dials[i].minValue) / 500;
     if (Dials[i].value >= Dials[i].maxValue) {
@@ -229,8 +230,6 @@ void DoDummyValueChanger() {
     }
   }
   for (int i = 0; i < numOfBars; i++) {
-    
-
     if (Bars[i].lastValue == Bars[i].maxValue) {
       Bars[i].value = Bars[i].minValue;
     }
@@ -257,7 +256,6 @@ void DrawStats() {
   float frameTime = (t2 - t1);
   float FPS = 1000 / (frameTime / 1000);
   Bars[1].value = FPS;
-  Dials[5].value = FPS;
   float value = 0;
   for (int i = 0; i < 10; i++) {
     value += timeArray[i];
@@ -268,6 +266,7 @@ void DrawStats() {
     percentLoad = 100;
   }
 
+  Bars[2].value = percentLoad;
   if (FPS < 25) {
     tft.setTextColor(_colorBad, _background);
   } else if (FPS < 59) {
@@ -300,7 +299,7 @@ void updateDials() {
         Dials[i].value = Dials[i].minValue;
       }
       updatePointer(Dials[i]);
-      updateText(Dials[i]);
+      updateText(Dials[i]);   
       Dials[i].lastValue = Dials[i].value;
     }
   }
@@ -336,25 +335,6 @@ void updateBars() {
       }
       Bars[i].lastValue = (nodualToDraw / (double)noduals) * Bars[i].maxValue;  // Update last value to reflect the number of rectangles
     }
-
-    int xpos = Bars[i].xPos + 31;
-    int ypos = Bars[i].yPos + 50;
-    tft.setTextColor(_dialForeground, _background);
-    tft.setFontScale(0);
-    tft.setCursor(xpos, ypos);
-    DrawNumberValue(Bars[i].value);
-    ypos += 20;
-    tft.setCursor(xpos, ypos);
-    DrawNumberValue(numOldNoduals);
-    ypos += 20;
-    tft.setCursor(xpos, ypos);
-    DrawNumberValue(numOldNoduals);
-    ypos += 20;
-    tft.setCursor(xpos, ypos);
-    DrawNumberValue(nodualToDraw);
-    ypos += 20;
-    tft.setCursor(xpos, ypos);
-    DrawNumberValue(Bars[i].lastValue);
   }
 }
 
@@ -382,6 +362,7 @@ int choseDialColor(double value, DataPoint dial) {
 void updatePointer(DataPoint dial) {
   int oldAngle = calculatePointerAngle(dial.minValue, dial.maxValue, dial.lastValue);
   int newAngle = calculatePointerAngle(dial.minValue, dial.maxValue, dial.value);
+  
   if (newAngle != oldAngle) {
     int triWidth = 6;
     int color = choseDialColor(dial.value, dial);
