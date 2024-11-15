@@ -1,3 +1,6 @@
 [submodule "PCB/KDLK24-CDD/Adafruit-RA8875-Breakout-Board-PCB"]
 	path = PCB/KDLK24-CDD/Adafruit-RA8875-Breakout-Board-PCB
 	url = https://github.com/adafruit/Adafruit-RA8875-Breakout-Board-PCB.git
+[submodule "Software/Display Driver/RA8875"]
+	path = Software/Display Driver/RA8875
+	url = https://github.com/sumotoy/RA8875/
